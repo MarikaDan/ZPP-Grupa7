@@ -1,12 +1,23 @@
-﻿<Window x:Class="WpfApp1.MainWindow"
+<Window x:Class="WpfApp1.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WpfApp1"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Word Template Editor" Height="450" Width="800">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
 
+        <StackPanel Grid.Column="0" Margin="10" VerticalAlignment="Top">
+            <Label Content="Ścieżka do pliku docx:" HorizontalAlignment="Center"/>
+            <TextBox Name="txtFilePath" Margin="0 5" Width="400" Height="30" Text="ścieżka_do_pliku.docx"/>
+            <Label Content="Wprowadź tekst dla każdego miejsca wstawienia:" HorizontalAlignment="Center" Margin="0 10"/>
+            <TextBox Name="txtImie" Margin="0 5" Width="200" Height="30" Text="Wprowadź imię"/>
+            <TextBox Name="txtData" Margin="0 5" Width="200" Height="30" Text="Wprowadź datę"/>
+            <Button Content="Generuj" Click="GenerateButton_Click" HorizontalAlignment="Center" Margin="100 10"/>
+            <Button Content="Wyzeruj" Click="ResetButton_Click" HorizontalAlignment="Center" Margin="100 10"/>
+        </StackPanel>
+
+        <WebBrowser x:Name="webBrowser" Grid.Column="1" Margin="10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
     </Grid>
 </Window>
