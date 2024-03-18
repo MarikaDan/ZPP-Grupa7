@@ -1,4 +1,4 @@
 <H1>TO DO</H1>
 <ul>
-  <li>pozmieniać ścieżki tam gdzei są komentarze</li>
+  <li>pozmieniać ścieżki tam gdzie są komentarze</li>
 </ul>
