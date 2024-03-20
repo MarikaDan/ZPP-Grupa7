@@ -1,7 +1,4 @@
-﻿using System.Text;
-using System.Windows;
-using NPOI.XWPF.UserModel;
-using System.IO;
+﻿using System.Windows;
 using ClassLibrary1;
 
 namespace ZPP_1_UI
@@ -16,64 +13,55 @@ namespace ZPP_1_UI
             InitializeComponent();
         }
 
+        private string _templatePath;
+
+        private void OpenFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Microsoft.Win32.OpenFileDialog
+            {
+                DefaultExt = ".docx",
+                Filter = "Word documents (.docx)|*.docx"
+            };
+
+            var result = dialog.ShowDialog();
+
+            if (result != true) return;
+            _templatePath = dialog.FileName;
+            selectedPath.Text = _templatePath;
+        }
+
         private void GenerateButton_Click(object sender, RoutedEventArgs e)
         {
-            string templatePath = txtFilePath.Text;
-            string fileName = Filler.GetTmpFileName("docx");
-            string outputPath = Filler.GetOutPath(templatePath, fileName);
-
-            //C:\Users\asus\Documents\GitHub\ZPP-Grupa7\sprawozdanie.docx
-
-            using (var rs = File.OpenRead(templatePath))
+            if (string.IsNullOrEmpty(_templatePath))
             {
-                using (var doc = new XWPFDocument(rs))
-                {
-                    foreach (var para in doc.Paragraphs)
-                    {
-                        if (para.ParagraphText.Contains("<imie>"))
-                        {
-                            para.ReplaceText("<imie>", txtImie.Text);
-                        }
-                        if (para.ParagraphText.Contains("<data>"))
-                        {
-                            para.ReplaceText("<data>", txtData.Text);
-                        }
-
-                        using (var ws = File.Create(outputPath))
-                        {
-                            doc.Write(ws);
-                        }
-                    }
-                }
-
-                MessageBox.Show("Plik został wygenerowany.");
-
-                // Wyświetl podgląd dokumentu
-                ShowDocumentPreview(outputPath);
-            }
-        }
-
-        public void ShowDocumentPreview(string filePath)
-        {
-            StringBuilder htmlContent = new StringBuilder();
-            htmlContent.AppendLine("<html>");
-            htmlContent.AppendLine("<head></head>");
-            htmlContent.AppendLine("<body>");
-
-            using (var stream = File.OpenRead(filePath))
-            {
-                var doc = new XWPFDocument(stream);
-                foreach (var paragraph in doc.Paragraphs)
-                {
-                    htmlContent.AppendLine("<p>" + paragraph.ParagraphText + "</p>");
-                }
+                MessageBox.Show("Wybierz plik szablonu.");
+                return;
             }
 
-            htmlContent.AppendLine("</body>");
-            htmlContent.AppendLine("</html>");
+            var fileName = Filler.GetTmpFileName("docx");
+            var docxTmpPath = Filler.GetOutPath(_templatePath, fileName);
 
-            // Ustaw zawartość HTML dla WebBrowser
-            webBrowser.NavigateToString(htmlContent.ToString());
+            var document = Filler.OpenDocument(_templatePath);
+
+            var replacements = Filler.PrepareReplacements(document);
+
+            //Do testów, trzeba zrobić to w pętli albo zrobić to jakoś ładniej
+            replacements["<imie>"] = txtImie.Text;
+            replacements["<data>"] = txtData.Text;
+
+            Filler.ReplacePlaceholders(document, replacements);
+
+            Filler.SaveDocxFile(document, docxTmpPath);
+
+            var pdfFile = Filler.GetOutPath(_templatePath, Filler.GetTmpFileName("pdf"));
+            Filler.ConvertToPdf(docxTmpPath, pdfFile);
+
+            Filler.RemoveTmpFile(docxTmpPath);
+
+            MessageBox.Show("Plik został wygenerowany.");
+
+            Filler.OpenWithDefaultProgram(pdfFile);
         }
+
     }
 }
