@@ -13,4 +13,8 @@
     <PackageReference Include="NPOI" Version="2.6.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ClassLibrary1\ClassLibrary1.csproj" />
+  </ItemGroup>
+
 </Project>

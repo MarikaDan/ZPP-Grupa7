@@ -2,6 +2,7 @@
 using System.Windows;
 using NPOI.XWPF.UserModel;
 using System.IO;
+using ClassLibrary1;
 
 namespace ZPP_1_UI
 {
@@ -17,8 +18,11 @@ namespace ZPP_1_UI
 
         private void GenerateButton_Click(object sender, RoutedEventArgs e)
         {
-            string templatePath = @"ścieżka_do_szablonu.docx"; // Zmień na właściwą ścieżkę
-            string outputPath = @"ścieżka_do_wyjściowego_pliku.docx"; // Zmień na właściwą ścieżkę
+            string templatePath = txtFilePath.Text;
+            string fileName = Filler.GetTmpFileName("docx");
+            string outputPath = Filler.GetOutPath(templatePath, fileName);
+
+            //C:\Users\asus\Documents\GitHub\ZPP-Grupa7\sprawozdanie.docx
 
             using (var rs = File.OpenRead(templatePath))
             {
