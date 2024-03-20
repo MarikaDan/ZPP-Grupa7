@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 
-namespace ZPP_1_WPF
+namespace ZPP_1_UI
 {
     /// <summary>
     /// Interaction logic for App.xaml
@@ -14,4 +10,5 @@ namespace ZPP_1_WPF
     public partial class App : Application
     {
     }
+
 }
