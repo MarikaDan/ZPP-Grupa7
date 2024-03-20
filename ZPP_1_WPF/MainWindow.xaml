@@ -8,20 +8,22 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
             <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Column="0" Margin="10" VerticalAlignment="Top">
-            <Label Content="Ścieżka do pliku docx:" HorizontalAlignment="Center"/>
-            <TextBox Name="txtFilePath" Margin="0 5" Width="400" Height="30" Text="ścieżka_do_pliku.docx"/>
+            <Button Content="Wybierz plik" Click="OpenFileButton_Click" HorizontalAlignment="Center" Margin="100 10"/>
+            <TextBox Name="selectedPath" Margin="0 5" Width="200" Height="20" Text="Wybrana ścieżka" IsReadOnly="True"/>
+
             <Label Content="Wprowadź tekst dla każdego miejsca wstawienia:" HorizontalAlignment="Center" Margin="0 10"/>
             <TextBox Name="txtImie" Margin="0 5" Width="200" Height="30" Text="Wprowadź imię"/>
             <TextBox Name="txtData" Margin="0 5" Width="200" Height="30" Text="Wprowadź datę"/>
+
             <Button Content="Generuj" Click="GenerateButton_Click" HorizontalAlignment="Center" Margin="100 10"/>
-            <!--<Button Content="Wyzeruj" Click="ResetButton_Click" HorizontalAlignment="Center" Margin="100 10"/>-->
+
         </StackPanel>
 
-        <WebBrowser x:Name="webBrowser" Grid.Column="1" Margin="10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+        <!--<WebBrowser x:Name="pdfViewer" Grid.Column="1" Margin="10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />-->
     </Grid>
 </Window>
