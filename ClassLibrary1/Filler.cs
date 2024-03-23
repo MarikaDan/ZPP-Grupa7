@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using GrapeCity.Documents.Word;
 using GrapeCity.Documents.Word.Layout;
 using NPOI.XWPF.UserModel;
@@ -16,7 +17,8 @@ namespace ClassLibrary1
             "<prowadzacy>",
             "<temat>",
             "<kierunek>",
-            "<grupa>"
+            "<grupa>",
+            "<nr_cwiczenia>"
         };
 
         public static XWPFDocument OpenDocument(string path)
@@ -77,9 +79,9 @@ namespace ClassLibrary1
             fileOpener.Start();
         }
 
-        public static Dictionary<string, string> PrepareReplacements(XWPFDocument document)
+        public static IEnumerable<TagReplacement> PrepareReplacementsFromList(XWPFDocument document)
         {
-            var result = new Dictionary<string, string>();
+            var result = new List<TagReplacement>();
 
             foreach (var para in document.Paragraphs)
             {
@@ -87,7 +89,7 @@ namespace ClassLibrary1
                 {
                     if (para.ParagraphText.Contains(tag))
                     {
-                        result.Add(tag, "");
+                        result.Add(new TagReplacement(tag));
                     }
                 });
             }
@@ -95,15 +97,35 @@ namespace ClassLibrary1
             return result;
         }
 
-        public static void ReplacePlaceholders(XWPFDocument document, Dictionary<string, string> replacements)
+        public static IEnumerable<TagReplacement> PrepareReplacementsFromRegex(XWPFDocument document)
+        {
+            var result = new List<TagReplacement>();
+
+            var regex = new Regex(@"<[^<>]+>");
+            foreach (var para in document.Paragraphs)
+            {
+                var matches = regex.Matches(para.ParagraphText);
+                foreach (Match match in matches)
+                {
+                    result.Add(new TagReplacement(match.Value));
+                }
+            }
+
+            return result;
+        }
+
+        public static void ReplacePlaceholders(XWPFDocument document, IEnumerable<TagReplacement> replacements)
         {
             foreach (var para in document.Paragraphs)
             {
-                foreach (var keyValuePair in replacements)
+                var tmpList = replacements.ToList();
+                foreach (var replacement in tmpList)
                 {
-                    if (!para.ParagraphText.Contains(keyValuePair.Key)) continue;
+                    if (!para.ParagraphText.Contains(replacement.Tag)) continue;
 
-                    para.ReplaceText(keyValuePair.Key, keyValuePair.Value);
+                    if (replacement.Value is null) continue;
+
+                    para.ReplaceText(replacement.Tag, replacement.Value);
                 }
             }
         }

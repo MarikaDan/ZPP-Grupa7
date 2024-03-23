@@ -1,5 +1,7 @@
-﻿using System.Windows;
+﻿using System.Collections.ObjectModel;
+using System.Windows;
 using ClassLibrary1;
+using NPOI.XWPF.UserModel;
 
 namespace ZPP_1_UI
 {
@@ -8,12 +10,21 @@ namespace ZPP_1_UI
     /// </summary>
     public partial class MainWindow : Window
     {
+        private string _templatePath;
+        private XWPFDocument _document;
+
+        private ObservableCollection<TagReplacement> _tagReplacements;
+        public ObservableCollection<TagReplacement> TagReplacements => _tagReplacements;
+
         public MainWindow()
         {
             InitializeComponent();
-        }
 
-        private string _templatePath;
+            _tagReplacements = new ObservableCollection<TagReplacement>();
+            DataContext = this;
+
+            tagList.ItemsSource = Filler.PlaceholderTags;
+        }
 
         private void OpenFileButton_Click(object sender, RoutedEventArgs e)
         {
@@ -30,7 +41,7 @@ namespace ZPP_1_UI
             selectedPath.Text = _templatePath;
         }
 
-        private void GenerateButton_Click(object sender, RoutedEventArgs e)
+        private void PrepareFile()
         {
             if (string.IsNullOrEmpty(_templatePath))
             {
@@ -38,20 +49,26 @@ namespace ZPP_1_UI
                 return;
             }
 
+            _document = Filler.OpenDocument(_templatePath);
+
+            var tags = UseRegexCheckBox.IsChecked switch
+            {
+                true => Filler.PrepareReplacementsFromRegex(_document),
+                _ => Filler.PrepareReplacementsFromList(_document)
+            };
+
+            _tagReplacements = new ObservableCollection<TagReplacement>(tags);
+            replacementsGrid.ItemsSource = _tagReplacements;
+        }
+
+        private void GenerateButton_Click(object sender, RoutedEventArgs e)
+        {
             var fileName = Filler.GetTmpFileName("docx");
             var docxTmpPath = Filler.GetOutPath(_templatePath, fileName);
 
-            var document = Filler.OpenDocument(_templatePath);
 
-            var replacements = Filler.PrepareReplacements(document);
-
-            //Do testów, trzeba zrobić to w pętli albo zrobić to jakoś ładniej
-            replacements["<imie>"] = txtImie.Text;
-            replacements["<data>"] = txtData.Text;
-
-            Filler.ReplacePlaceholders(document, replacements);
-
-            Filler.SaveDocxFile(document, docxTmpPath);
+            Filler.ReplacePlaceholders(_document, TagReplacements);
+            Filler.SaveDocxFile(_document, docxTmpPath);
 
             var pdfFile = Filler.GetOutPath(_templatePath, Filler.GetTmpFileName("pdf"));
             Filler.ConvertToPdf(docxTmpPath, pdfFile);
@@ -63,5 +80,7 @@ namespace ZPP_1_UI
             Filler.OpenWithDefaultProgram(pdfFile);
         }
 
+        private void OpenFile_Click(object sender, RoutedEventArgs e) => PrepareFile();
     }
+
 }

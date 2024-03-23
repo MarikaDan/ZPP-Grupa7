@@ -11,18 +11,38 @@
             <ColumnDefinition Width="2*" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0" Margin="10,10,223,10" >
 
-        <StackPanel Grid.Column="0" Margin="10" VerticalAlignment="Top">
-            <Button Content="Wybierz plik" Click="OpenFileButton_Click" HorizontalAlignment="Center" Margin="100 10"/>
-            <TextBox Name="selectedPath" Margin="0 5" Width="200" Height="20" Text="Wybrana ścieżka" IsReadOnly="True"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="2*" />
+            </Grid.RowDefinitions>
 
-            <Label Content="Wprowadź tekst dla każdego miejsca wstawienia:" HorizontalAlignment="Center" Margin="0 10"/>
-            <TextBox Name="txtImie" Margin="0 5" Width="200" Height="30" Text="Wprowadź imię"/>
-            <TextBox Name="txtData" Margin="0 5" Width="200" Height="30" Text="Wprowadź datę"/>
+            <StackPanel Grid.Row="0">
+                <Button Content="Wybierz plik" Click="OpenFileButton_Click" HorizontalAlignment="Center" Margin="100 10"/>
+                <TextBox x:Name="selectedPath" Margin="0 5" Width="200" Height="20" Text="Wybrana ścieżka" IsReadOnly="True"/>
 
-            <Button Content="Generuj" Click="GenerateButton_Click" HorizontalAlignment="Center" Margin="100 10"/>
+                <CheckBox x:Name="UseRegexCheckBox" Content="Używaj regex zamiast listy tagów" HorizontalAlignment="Center"/>
 
-        </StackPanel>
+                <Button Content="Otwórz plik" Click="OpenFile_Click" HorizontalAlignment="Center" Margin="100 10"/>
+
+                <Button Content="Generuj" Click="GenerateButton_Click" HorizontalAlignment="Center" Margin="100 10"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1">
+                <Label Content="Obsługiwane tagi:"/>
+                <ListBox x:Name="tagList" VerticalAlignment="Stretch"/>
+            </StackPanel>
+
+        </Grid>
+
+        <DataGrid x:Name="replacementsGrid" ItemsSource="{Binding TagReplacements}" AutoGenerateColumns="False" Grid.ColumnSpan="2" Margin="320,0,0,0">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Tag" Binding="{Binding Tag, Mode=TwoWay}" IsReadOnly="True" Width="*"/>
+                <DataGridTextColumn Header="Zamień na" Binding="{Binding Value, Mode=TwoWay}" IsReadOnly="False" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
 
         <!--<WebBrowser x:Name="pdfViewer" Grid.Column="1" Margin="10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />-->
     </Grid>
